@@ -26,9 +26,11 @@ namespace VPET.Evian.TEST
             MinThirst.Text = vts.Set.MinThirst.ToString();
             MinSatiety.Text = vts.Set.MinSatiety.ToString();
             MinMood.Text = vts.Set.MinMood.ToString();
+            MinHealth.Text = vts.Set.MinHealth.ToString();
             MinGoodThirst.Text = vts.Set.MinGoodThirst.ToString();
             MinGoodSatiety.Text = vts.Set.MinGoodSatiety.ToString();
             MinGoodMood.Text = vts.Set.MinGoodMood.ToString();
+            MinGoodHealth.Text = vts.Set.MinGoodHealth.ToString();
 
         }
 
@@ -48,9 +50,11 @@ namespace VPET.Evian.TEST
             vts.Set.MinThirst = Convert.ToInt32(MinThirst.Text);
             vts.Set.MinSatiety = Convert.ToInt32(MinSatiety.Text);
             vts.Set.MinMood = Convert.ToInt32(MinMood.Text);
+            vts.Set.MinHealth = Convert.ToInt32(MinHealth.Text);
             vts.Set.MinGoodThirst = Convert.ToInt32(MinGoodThirst.Text);
             vts.Set.MinGoodSatiety = Convert.ToInt32(MinGoodSatiety.Text);
             vts.Set.MinGoodMood = Convert.ToInt32(MinGoodMood.Text);
+            vts.Set.MinGoodHealth = Convert.ToInt32(MinGoodHealth.Text);
             vts.MW.Set["SettingPP"] = LPSConvert.SerializeObject(vts.Set, "SettingPP");
             Close();
         }

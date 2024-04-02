@@ -20,47 +20,6 @@ using static VPet_Simulator.Core.GraphInfo;
 
 namespace VPET.Evian.TEST
 {
-    public class GOOD
-    {
-        public Food Food { get; set; }
-        private double Weight = 0;
-        public GOOD(Food food,int weight)
-        {
-            Food = food;
-            Weight = weight;
-        }
-        public GOOD() { }
-        public double GetWeight()
-        {
-            return Weight;
-        }
-        public bool SetWeight(Food food)
-        {
-            if (food.Type == Food.FoodType.Meal || food.Type == Food.FoodType.Food)
-            {
-                Weight = food.StrengthFood / food.Price;
-            }
-            else if (food.Type == Food.FoodType.Drink)
-            {
-                Weight = food.StrengthDrink / food.Price;
-            }
-            else if (food.Type == Food.FoodType.Gift)
-            {
-                Weight = food.Feeling / food.Price;
-            }
-            else if (food.Type == Food.FoodType.Snack)
-            {
-                Weight = (food.StrengthFood * 0.4 + food.Feeling * 0.6) / food.Price;
-            }
-            else if (food.Type == Food.FoodType.Drug)
-            {
-                Weight = food.Health / food.Price;
-            }
-            else 
-                return false;
-            return true;
-        }
-    }
     public class SettingPP : MainPlugin
     {
         public Setting Set;
@@ -76,11 +35,14 @@ namespace VPET.Evian.TEST
             Set.MinThirst = MW.Set["SettingPP"].GetInt("MinThirst");
             Set.MinSatiety = MW.Set["SettingPP"].GetInt("MinSatiety");
             Set.MinMood = MW.Set["SettingPP"].GetInt("MinMood");
+            Set.MinHealth = MW.Set["SettingPP"].GetInt("MinHealth");
             Set.MinDeposit = MW.Set["SettingPP"].GetInt("MinDeposit");
             Set.MinGoodThirst = MW.Set["SettingPP"].GetInt("MinGoodThirst");
             Set.MinGoodSatiety = MW.Set["SettingPP"].GetInt("MinGoodSatiety");
             Set.MinGoodMood = MW.Set["SettingPP"].GetInt("MinGoodMood");
+            Set.MinGoodHealth = MW.Set["SettingPP"].GetInt("MinGoodHealth");
             Set.Enable = MW.Set["SettingPP"].GetBool("Enable");
+
 
             MenuItem modset = MW.Main.ToolBar.MenuMODConfig;
             modset.Visibility = Visibility.Visible;
@@ -91,17 +53,6 @@ namespace VPET.Evian.TEST
             };
             menuItem.Click += (s, e) => { Setting(); };
             modset.Items.Add(menuItem);
-            GOOD tmp=new GOOD();
-            foreach (var item in MW.Foods)
-            {
-                if (tmp.SetWeight(item))
-                { 
-                    tmp.Food = item;
-                    Goods.Add(tmp);
-                }
-            }
-            if (Goods.Count == 0) MessageBox.Show("ERROR,No Good Has Been get");
-            tmp = null;
             MW.Main.FunctionSpendHandle += AutoBuyPP;
             ///base.LoadPlugin();
         }
@@ -118,9 +69,18 @@ namespace VPET.Evian.TEST
                 winSetting.Topmost = true;
             }
         }
-        public List<GOOD> Goods { get; } = new List<GOOD>();
+        public List<Food> Foods { get; } = new List<Food>();
         private void TakeItem(Food item)
         {
+            //通知
+            item.LoadEatTimeSource(MW);
+            item.NotifyOfPropertyChange("Description");
+
+            MW.GameSavesData.GameSave.Money -= item.Price;
+            //统计
+            MW.GameSavesData.Statistics[(gint)"stat_buytimes"]++;
+            MW.GameSavesData.Statistics[(gint)("buy_" + item.Name)]++;
+            MW.GameSavesData.Statistics[(gdbe)"stat_betterbuy"] += item.Price;
             MW.GameSavesData.GameSave.EatFood(item);
             switch (item.Type)
             {
@@ -151,28 +111,6 @@ namespace VPET.Evian.TEST
             MW.GameSavesData.Statistics[(gint)"stat_autobuy"]++;
             MW.Main.Display(item.GetGraph(), item.ImageSource, MW.Main.DisplayToNomal);
         }
-        public void RAND(List<GOOD> good, GOOD result)
-        {
-            Random rand = new Random();
-            var items = good.ToList();
-            var totalWeight = items.Sum(x => x.GetWeight());
-            var randomWeightedIndex = Convert.ToDouble(rand.Next(Convert.ToInt32(totalWeight * 1000)))/1000;
-            var itemWeightedIndex = 0.00;
-            MessageBox.Show("GOT");
-            foreach (var item in items)
-            {
-                itemWeightedIndex += item.GetWeight();
-                if (randomWeightedIndex < itemWeightedIndex)
-                {
-                    result = item;
-                    rand = null;
-                    if(result.Food.Price!=0) MessageBox.Show("GOT!");
-                    return;
-                }
-            }
-            rand = null;
-            MessageBox.Show("ERROR,Falied To Get Random");
-        }
         private void AutoBuyPP()
         {
             var sm = MW.GameSavesData.GameSave.StrengthMax;
@@ -180,82 +118,75 @@ namespace VPET.Evian.TEST
             if (Set.Enable && MW.GameSavesData.GameSave.Money >= (Set.MinDeposit > 100 ? Set.MinDeposit : 100))
             {
                 var havemoney = (Set.MaxPrice < MW.GameSavesData.GameSave.Money ? Set.MaxPrice : MW.GameSavesData.GameSave.Money);
-                List<GOOD> good = Goods.FindAll(x =>  x.Food.Price < havemoney //桌宠不吃负面的食物
-                );
-                GOOD result = new GOOD();
-                result.Food.Price = 0;
-                if (good.Count != 0) MessageBox.Show("Good Is Selected");
+                List<Food> food = MW.Foods.FindAll(x => x.Price >= 2 && x.Health >= 0 && x.Exp >= 0 && x.Likability >= 0 && x.Price < havemoney //桌宠不吃负面的食物
+                 && !x.IsOverLoad() // 不吃超模食物
+                 );
                 if (MW.GameSavesData.GameSave.StrengthFood < sm * Set.MinSatiety * 0.01)
                 {
                     if (MW.GameSavesData.GameSave.StrengthFood < sm * Set.MinSatiety * 0.01 * 0.8)
-                    {
-                        good = good.FindAll(x => x.Food.Type == Food.FoodType.Meal && x.Food.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? sm * Set.MinGoodSatiety * 0.01 : sm));
-                        if (good.Count == 0)
-                        {
-                            result = null;
-                            return;
-                        }
-                        RAND(good, result);
+                    {//太饿了,找正餐
+                        food = food.FindAll(x => x.Type == Food.FoodType.Meal && x.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? (sm * Set.MinGoodSatiety * 0.01) : sm));
                     }
                     else
-                    {
-                        good = good.FindAll(x => x.Food.Type == Food.FoodType.Snack && x.Food.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? sm * Set.MinGoodSatiety * 0.01 : sm));
-                        if (good.Count == 0)
-                        {
-                            result = null;
-                            return;
-                        }
-                        RAND(good, result);
+                    {//找零食
+                        food = food.FindAll(x => x.Type == Food.FoodType.Snack && x.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? (sm * Set.MinGoodSatiety * 0.01) : sm));
                     }
-                    if (result.Food.Price == 0) MessageBox.Show("ERROR,No Food Is Randomed");
-                    MW.GameSavesData.GameSave.Money -= result.Food.Price * 0.2;
-                    TakeItem(result.Food);
+                    if (food.Count == 0)
+                        return;
+                    var item = food[Function.Rnd.Next(food.Count)];
+                    MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                    TakeItem(item);
                 }
                 else if (MW.GameSavesData.GameSave.StrengthDrink < sm * Set.MinThirst * 0.01)
                 {
-                    good = good.FindAll(x => x.Food.Type == Food.FoodType.Drink && x.Food.StrengthDrink > (sm * Set.MinGoodThirst * 0.01 < sm ? sm * Set.MinGoodThirst * 0.01 : sm));
-                    if (good.Count == 0)
-                    {
-                        result = null;
+                    food = food.FindAll(x => x.Type == Food.FoodType.Drink && x.StrengthDrink > (sm * Set.MinGoodThirst * 0.01 < sm ? sm * Set.MinGoodThirst * 0.01 : sm));
+                    if (food.Count == 0)
                         return;
-                    }
-                    RAND(good, result);
-                    if (result.Food.Price == 0) MessageBox.Show("ERROR,No Food Is Randomed");
-                    MW.GameSavesData.GameSave.Money -= result.Food.Price * 0.2;
-                    TakeItem(result.Food);
+                    var item = food[Function.Rnd.Next(food.Count)];
+                    MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                    TakeItem(item);
                 }
-                else if (MW.GameSavesData.GameSave.Feeling < smood * Set.MinMood * 0.01) 
+                else if (MW.GameSavesData.GameSave.Health < 100 * Set.MinHealth * 0.01)
+                {
+                    food = food.FindAll(x => x.Type == Food.FoodType.Drug && x.Health > (sm * Set.MinGoodHealth * 0.01 < sm ? sm * Set.MinGoodHealth * 0.01 : sm));
+                    if (food.Count == 0)
+                        return;
+                    var item = food[Function.Rnd.Next(food.Count)];
+                    MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                    TakeItem(item);
+                }
+                else if (MW.GameSavesData.GameSave.Feeling < smood * Set.MinMood * 0.01)
                 {
                     if (MW.GameSavesData.GameSave.Feeling < smood * Set.MinMood * 0.01 * 0.8)
                     {
                     mood_Gift:
-                        good = good.FindAll(x => x.Food.Type == Food.FoodType.Gift && x.Food.Feeling > (sm * Set.MinGoodMood * 0.01 < sm ? sm * Set.MinGoodMood * 0.01 : sm));
-                        if (good.Count == 0)
+                        food = food.FindAll(x => x.Type == Food.FoodType.Gift && x.Feeling > (smood * Set.MinGoodMood * 0.01 < smood ? smood * Set.MinGoodMood * 0.01 : smood));
+                        if (food.Count == 0)
                         {
                             smood *= 0.5;
                             goto mood_Gift;
                         }
-                        RAND(good, result);
+                        var item = food[Function.Rnd.Next(food.Count)];
+                        MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                        TakeItem(item);
                     }
                     else
                     {
                     mood_Snake:
-                        good = good.FindAll(x => x.Food.Type == Food.FoodType.Snack && x.Food.Feeling > (sm * Set.MinGoodMood * 0.01 < sm ? sm * Set.MinGoodMood * 0.01 : sm));
-                        if (good.Count == 0)
+                        food = food.FindAll(x => x.Type == Food.FoodType.Snack && x.Feeling > (smood * Set.MinGoodMood * 0.01 < smood ? smood * Set.MinGoodMood * 0.01 : smood));
+                        if (food.Count == 0)
                         {
-                            smood *= 0.5;
+                            smood *= 0.8;
                             goto mood_Snake;
                         }
-                        RAND(good, result);
+                        var item = food[Function.Rnd.Next(food.Count)];
+                        MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                        TakeItem(item);
                     }
-                    if (result.Food.Price == 0) MessageBox.Show("ERROR,No Food Is Randomed");
-                    MW.GameSavesData.GameSave.Money -= result.Food.Price * 0.2;
-                    TakeItem(result.Food);
                 }
-                else 
+                else
                 {
-                        result = null;
-                        return;
+                    return;
                 }
             }
             return;

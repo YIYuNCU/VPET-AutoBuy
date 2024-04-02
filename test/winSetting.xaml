@@ -59,5 +59,9 @@
         <Button pu:ButtonHelper.CornerRadius="4" Content="{ll:Str 保存设置}" Background="{DynamicResource SecondaryLight}"
         BorderBrush="{DynamicResource SecondaryDark}" BorderThickness="2" Grid.Row="6" Margin="47,8,43,2"
         Grid.ColumnSpan="5" Click="Save_Click" />
+        <TextBlock Grid.Column="3" HorizontalAlignment="Left" Grid.Row="3" TextWrapping="Wrap" Text="健康/%" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBox Grid.Column="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="3" x:Name="MinHealth"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Left" Grid.Row="5" TextWrapping="Wrap" Text="健康/%" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBox Grid.Column="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="5" x:Name="MinGoodHealth"/>
     </Grid>
 </Window>

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SettingPP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ead1e3b838cf8dac6351eadbe2b71d15104a4103")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac6d9d775860569a622c7715147928199a7042a6")]
 [assembly: System.Reflection.AssemblyProductAttribute("SettingPP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SettingPP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

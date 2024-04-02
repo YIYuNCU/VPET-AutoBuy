@@ -74,6 +74,20 @@ namespace VPET.Evian.TEST
         private int minmood = 80;
         public string MinMoodStr { get; private set; } = "80%";
         /// <summary>
+        /// 状态-最小健康值
+        /// </summary>
+        [Line]
+        public int MinHealth
+        {
+            get => minhealth; set
+            {
+                minhealth = value;
+                MinHealthStr = $"{value:f2}%";
+            }
+        }
+        private int minhealth = 90;
+        public string MinHealthStr { get; private set; } = "90%";
+        /// <summary>
         /// 启用条件-最低存款
         /// </summary>
         [Line]
@@ -116,7 +130,7 @@ namespace VPET.Evian.TEST
         private int mingoodsatiety = 5;
         public string MinGoodSatietyStr { get; private set; } = "5%";
         /// <summary>
-        /// 最小心情值
+        /// 属性-最小心情值
         /// </summary>
         [Line]
         public int MinGoodMood
@@ -129,6 +143,20 @@ namespace VPET.Evian.TEST
         }
         private int mingoodmood = 5;
         public string MinGoodMoodStr { get; private set; } = "5%";
+        /// <summary>
+        /// 属性-最小健康值
+        /// </summary>
+        [Line]
+        public int MinGoodHealth
+        {
+            get => mingoodhealth; set
+            {
+                mingoodhealth = value;
+                MinGoodHealthStr = $"{value:f2}%";
+            }
+        }
+        private int mingoodhealth = 5;
+        public string MinGoodHealthStr { get; private set; } = "5%";
         /// <summary>
         /// 启用SettingPP
         /// </summary>
