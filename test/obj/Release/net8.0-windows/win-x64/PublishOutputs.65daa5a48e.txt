@@ -1,9 +1,0 @@
-G:\Vpet\test\build\9004_AutoBuy++\plugin\SettingPP.deps.json
-G:\Vpet\test\build\9004_AutoBuy++\plugin\SettingPP.pdb
-G:\Vpet\test\build\9004_AutoBuy++\plugin\VPet-Simulator.Core.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\VPet-Simulator.Windows.Interface.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\LinePutScript.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\LinePutScript.Localization.WPF.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\Panuon.WPF.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\Panuon.WPF.UI.dll
-G:\Vpet\test\build\9004_AutoBuy++\plugin\SettingPP.dll
