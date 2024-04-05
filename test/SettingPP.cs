@@ -1,21 +1,11 @@
-﻿using Accessibility;
-using LinePutScript;
-using LinePutScript.Converter;
+﻿using LinePutScript;
 using LinePutScript.Localization.WPF;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+using Panuon.WPF.UI;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
-using static VPet_Simulator.Core.GraphInfo;
 
 
 namespace VPET.Evian.TEST
@@ -25,11 +15,14 @@ namespace VPET.Evian.TEST
         public Setting Set;
 
         public override string PluginName => "SettingPP";
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         public SettingPP(IMainWindow mainwin) : base(mainwin)
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         {
         }
         public override void LoadPlugin()
         {
+            ///从Setting.lps中读取存储的设置
             Set = new Setting(MW.Set["SettingPP"]);
             Set.MaxPrice = MW.Set["SettingPP"].GetInt("MaxPrice");
             Set.MinThirst = MW.Set["SettingPP"].GetInt("MinThirst");
@@ -53,6 +46,7 @@ namespace VPET.Evian.TEST
             };
             menuItem.Click += (s, e) => { Setting(); };
             modset.Items.Add(menuItem);
+            ///将自动购买功能挂在SpendHandle上
             MW.Main.FunctionSpendHandle += AutoBuyPP;
             ///base.LoadPlugin();
         }
@@ -113,6 +107,11 @@ namespace VPET.Evian.TEST
         }
         private void AutoBuyPP()
         {
+            if (MW.Set.AutoBuy && Set.Enable) 
+            {
+                MW.Set.AutoBuy = false;
+                MessageBoxX.Show("桌宠自带的自动购买和本mod的自动购买冲突，已关闭桌宠自带的自动购买".Translate(), "错误".Translate(),MessageBoxButton.OK, MessageBoxIcon.Error,DefaultButton.YesOK,5);
+            }
             var sm = MW.GameSavesData.GameSave.StrengthMax;
             var smood = MW.GameSavesData.GameSave.FeelingMax;
             if (Set.Enable && MW.GameSavesData.GameSave.Money >= (Set.MinDeposit > 100 ? Set.MinDeposit : 100))
@@ -120,10 +119,16 @@ namespace VPET.Evian.TEST
                 var havemoney = (Set.MaxPrice < MW.GameSavesData.GameSave.Money ? Set.MaxPrice : MW.GameSavesData.GameSave.Money);
                 List<Food> food = MW.Foods.FindAll(x => x.Price >= 2 && x.Health >= 0 && x.Exp >= 0 && x.Likability >= 0 && x.Price < havemoney //桌宠不吃负面的食物
                  && !x.IsOverLoad() // 不吃超模食物
+<<<<<<< Updated upstream
                  );
                 if (MW.GameSavesData.GameSave.StrengthFood < sm * Set.MinSatiety * 0.01)
+=======
+                ) ;
+
+                if ((MW.GameSavesData.GameSave.StrengthFood+MW.GameSavesData.GameSave.StoreStrengthFood) < sm * Set.MinSatiety * 0.01)
+>>>>>>> Stashed changes
                 {
-                    if (MW.GameSavesData.GameSave.StrengthFood < sm * Set.MinSatiety * 0.01 * 0.8)
+                    if ((MW.GameSavesData.GameSave.StrengthFood + MW.GameSavesData.GameSave.StoreStrengthFood) < sm * Set.MinSatiety * 0.01 * 0.8)
                     {//太饿了,找正餐
                         food = food.FindAll(x => x.Type == Food.FoodType.Meal && x.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? (sm * Set.MinGoodSatiety * 0.01) : sm));
                     }
@@ -137,7 +142,7 @@ namespace VPET.Evian.TEST
                     MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                     TakeItem(item);
                 }
-                else if (MW.GameSavesData.GameSave.StrengthDrink < sm * Set.MinThirst * 0.01)
+                else if ((MW.GameSavesData.GameSave.StrengthDrink+MW.GameSavesData.GameSave.StoreStrengthDrink) < sm * Set.MinThirst * 0.01)
                 {
                     food = food.FindAll(x => x.Type == Food.FoodType.Drink && x.StrengthDrink > (sm * Set.MinGoodThirst * 0.01 < sm ? sm * Set.MinGoodThirst * 0.01 : sm));
                     if (food.Count == 0)
@@ -155,9 +160,15 @@ namespace VPET.Evian.TEST
                     MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                     TakeItem(item);
                 }
+<<<<<<< Updated upstream
                 else if (MW.GameSavesData.GameSave.Feeling < smood * Set.MinMood * 0.01)
                 {
                     if (MW.GameSavesData.GameSave.Feeling < smood * Set.MinMood * 0.01 * 0.8)
+=======
+                else if ((MW.GameSavesData.GameSave.Feeling+MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01) 
+                {
+                    if ((MW.GameSavesData.GameSave.Feeling + MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01 * 0.8) 
+>>>>>>> Stashed changes
                     {
                     mood_Gift:
                         food = food.FindAll(x => x.Type == Food.FoodType.Gift && x.Feeling > (smood * Set.MinGoodMood * 0.01 < smood ? smood * Set.MinGoodMood * 0.01 : smood));

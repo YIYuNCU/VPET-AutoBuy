@@ -5,6 +5,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using VPet_Simulator.Core;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Panuon.WPF.UI;
 
 namespace VPET.Evian.TEST
 {
@@ -20,6 +22,11 @@ namespace VPET.Evian.TEST
         {
             InitializeComponent();
             this.vts = vts;
+            if (vts.MW.Set.AutoBuy && vts.Set.Enable) 
+            {
+                vts.MW.Set.AutoBuy = false;
+                MessageBoxX.Show("桌宠自带的自动购买和本mod的自动购买冲突，已关闭桌宠自带的自动购买".Translate(), "错误".Translate(), Panuon.WPF.UI.MessageBoxIcon.Error);
+            }
             SwitchOn.IsChecked = vts.Set.Enable;
             MaxPrice.Text = vts.Set.MaxPrice.ToString();
             LowDeposit.Text = vts.Set.MinDeposit.ToString();
@@ -43,6 +50,11 @@ namespace VPET.Evian.TEST
         {
             if (vts.Set.Enable != SwitchOn.IsChecked.Value)
             {
+                if (SwitchOn.IsChecked.Value && vts.MW.Set.AutoBuy) 
+                {
+                    vts.MW.Set.AutoBuy = false;
+                    MessageBoxX.Show("桌宠自带的自动购买和本mod的自动购买冲突，已关闭桌宠自带的自动购买".Translate(), "错误".Translate(), Panuon.WPF.UI.MessageBoxIcon.Error);
+                }
                 vts.Set.Enable = SwitchOn.IsChecked.Value;
             }
             vts.Set.MaxPrice = Convert.ToInt32(MaxPrice.Text);
