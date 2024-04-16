@@ -28,6 +28,7 @@ namespace VPET.Evian.TEST
                 MessageBoxX.Show("桌宠自带的自动购买和本mod的自动购买冲突，已关闭桌宠自带的自动购买".Translate(), "错误".Translate(), Panuon.WPF.UI.MessageBoxIcon.Error);
             }
             SwitchOn.IsChecked = vts.Set.Enable;
+            Mode.IsChecked = vts.Set.Mode;
             MaxPrice.Text = vts.Set.MaxPrice.ToString();
             LowDeposit.Text = vts.Set.MinDeposit.ToString();
             MinThirst.Text = vts.Set.MinThirst.ToString();
@@ -56,6 +57,10 @@ namespace VPET.Evian.TEST
                     MessageBoxX.Show("桌宠自带的自动购买和本mod的自动购买冲突，已关闭桌宠自带的自动购买".Translate(), "错误".Translate(), Panuon.WPF.UI.MessageBoxIcon.Error);
                 }
                 vts.Set.Enable = SwitchOn.IsChecked.Value;
+            }
+            if (vts.Set.Mode != Mode.IsChecked.Value) 
+            {
+                vts.Set.Mode = Mode.IsChecked.Value;
             }
             vts.Set.MaxPrice = Convert.ToInt32(MaxPrice.Text);
             vts.Set.MinDeposit = Convert.ToInt32(LowDeposit.Text);

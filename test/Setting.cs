@@ -156,5 +156,10 @@ namespace VPET.Evian.TEST
         /// </summary>
         [Line]
         public bool Enable { get; set; } = true;
+        /// <summary>
+        /// 启用暴力模式
+        /// </summary>
+        [Line]
+        public bool Mode { get; set; } = false;
     }
 }

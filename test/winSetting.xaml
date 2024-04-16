@@ -29,18 +29,18 @@
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="启用" VerticalAlignment="Center" Height="20" Width="32" Margin="8,0,0,0"/>
-        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="最高价格" VerticalAlignment="Center" Height="20" Width="70" RenderTransformOrigin="0.712,0.738" Grid.Column="2"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{ll:Str 启用}" VerticalAlignment="Center"  Margin="8,0,0,0"/>
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="{ll:Str 最高价格}" VerticalAlignment="Center"  RenderTransformOrigin="0.712,0.738" Grid.Column="2"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,35,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2" RenderTransformOrigin="0.363,0.437"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="2" TextWrapping="Wrap" Text="最低状态" VerticalAlignment="Center" Margin="4,0,0,0"/>
-        <TextBlock HorizontalAlignment="Left" Margin="4,8,0,0" Grid.Row="2" TextWrapping="Wrap" Text="口渴度/%" VerticalAlignment="Top" Grid.Column="1"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Grid.Row="3" TextWrapping="Wrap" Text="心情/%" VerticalAlignment="Center" Margin="4,0,0,0"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="2" TextWrapping="Wrap" Text="饱腹度/%" VerticalAlignment="Top" Margin="0,8,0,0"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="口渴度/%" VerticalAlignment="Center"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Grid.Row="5" TextWrapping="Wrap" Text="心情/%" VerticalAlignment="Center" Margin="5,0,0,0"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="饱腹度/%" VerticalAlignment="Top" Margin="0,14,0,0"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="4" TextWrapping="Wrap" Text="最低属性" VerticalAlignment="Center" Margin="4,0,0,0"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="1" TextWrapping="Wrap" Text="启用所需最低存款" VerticalAlignment="Center" Width="192" Grid.ColumnSpan="3" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 最低状态}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Center" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 口渴度%}" VerticalAlignment="Center" Grid.Column="1"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="{ll:Str 心情%}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 饱腹度%}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 口渴度%}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="5" TextWrapping="Wrap" Text="{ll:Str 心情%}" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 饱腹度%}" VerticalAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 最低属性}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="1" TextWrapping="Wrap" Text="{ll:Str 启用所需最低存款}" VerticalAlignment="Center"  Grid.ColumnSpan="3" Margin="4,0,0,0"/>
 
         <pu:Switch x:Name="SwitchOn" BorderBrush="{DynamicResource DARKPrimaryDark}"
          CheckedBackground="{DynamicResource DARKPrimary}" CheckedBorderBrush="{DynamicResource DARKPrimary}"
@@ -59,9 +59,15 @@
         <Button pu:ButtonHelper.CornerRadius="4" Content="{ll:Str 保存设置}" Background="{DynamicResource SecondaryLight}"
         BorderBrush="{DynamicResource SecondaryDark}" BorderThickness="2" Grid.Row="6" Margin="47,8,43,2"
         Grid.ColumnSpan="5" Click="Save_Click" />
-        <TextBlock Grid.Column="3" HorizontalAlignment="Left" Grid.Row="3" TextWrapping="Wrap" Text="健康/%" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="{ll:Str 健康%}" VerticalAlignment="Center"/>
         <TextBox Grid.Column="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="3" x:Name="MinHealth"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Left" Grid.Row="5" TextWrapping="Wrap" Text="健康/%" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="5" TextWrapping="Wrap" Text="{ll:Str 健康%}" VerticalAlignment="Center"/>
         <TextBox Grid.Column="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="5" x:Name="MinGoodHealth"/>
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="{ll:Str 暴力模式}" VerticalAlignment="Center"  Grid.Column="3" Grid.Row="1"/>
+        <pu:Switch x:Name="Mode" BorderBrush="{DynamicResource DARKPrimaryDark}"
+            CheckedBackground="{DynamicResource DARKPrimary}" CheckedBorderBrush="{DynamicResource DARKPrimary}"
+            Background="Transparent" BoxWidth="35" BoxHeight="18" ToggleSize="14" ToggleShadowColor="{x:Null}"
+            ToggleBrush="{DynamicResource DARKPrimaryDark}" 
+            CheckedToggleBrush="{DynamicResource DARKPrimaryText}" Grid.Column="4" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
     </Grid>
 </Window>
