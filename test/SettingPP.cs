@@ -1,6 +1,7 @@
 ﻿using LinePutScript;
 using LinePutScript.Localization.WPF;
 using Panuon.WPF.UI;
+using System.Diagnostics.Eventing.Reader;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -177,6 +178,103 @@ namespace VPET.Evian.TEST
                 }
             }
         }
+        private Food Double(Food food)
+        {
+            var sm = MW.GameSavesData.GameSave.StrengthMax;
+            var smood = MW.GameSavesData.GameSave.FeelingMax;
+
+            var FM = sm * Set.MinSatiety * 0.01 - MW.GameSavesData.GameSave.StrengthFood - MW.GameSavesData.GameSave.StoreStrengthFood;
+            var DM = sm * Set.MinThirst * 0.01 - MW.GameSavesData.GameSave.StrengthDrink - MW.GameSavesData.GameSave.StoreStrengthDrink;
+            var MM = smood * Set.MinMood * 0.01 - MW.GameSavesData.GameSave.Feeling - MW.GameSavesData.GameSave.StoreFeeling;
+            var Ratio_relS = MW.GameSavesData.GameSave.StrengthMax / 100;
+            var Ratio_relF = MW.GameSavesData.GameSave.FeelingMax / 100;
+            if (food.Type == Food.FoodType.Meal)
+            {
+                if (food.StrengthFood * Ratio_relS > FM)
+                {
+                    if (food.StrengthFood / 2 < FM && food.StrengthFood * Ratio_relS < 2 * FM)
+                        return food;
+                    else
+                    {
+                        food.Price -= (food.StrengthFood - FM - 0.1 * sm) / 6 * 0.7;
+                        food.StrengthFood = FM + 0.1 * sm;
+                    }
+                }
+                else
+                {
+                    food.Price += food.StrengthFood * (Ratio_relS - 1) / 6 * 0.7;
+                    food.StrengthFood *= Ratio_relS;
+                }
+            }
+            else if (food.Type == Food.FoodType.Drink)
+            {
+                if (food.StrengthDrink * Ratio_relS > DM)
+                {
+                    if (food.StrengthDrink / 2 < DM && food.StrengthDrink * Ratio_relS < 2 * DM)
+                        return food;
+                    else
+                    {
+                        food.Price -= (food.StrengthDrink - DM - 0.1 * sm) / 6 * 0.7;
+                        food.StrengthDrink = DM + 0.1 * sm;
+                    }
+                }
+                else
+                {
+                    food.Price += food.StrengthDrink * (Ratio_relS - 1) / 9 * 0.7;
+                    food.StrengthDrink *= Ratio_relS;
+                }
+            }
+            else if (food.Type == Food.FoodType.Snack)
+            {
+                if (food.StrengthFood * Ratio_relS > FM)
+                {
+                    if (food.StrengthFood / 2 < FM && food.StrengthFood * Ratio_relS < 2 * FM) ;
+                    else
+                    {
+                        food.Price -= (food.StrengthFood - FM-0.1*sm) / 6 * 0.7;
+                        food.StrengthFood = FM+0.1*sm;
+                    }
+                }
+                else
+                {
+                    food.Price += food.StrengthFood * (Ratio_relS - 1) / 6 * 0.7;
+                    food.StrengthFood *= Ratio_relS;
+                }
+                if (food.Feeling * Ratio_relF > MM)
+                {
+                    if (food.Feeling / 2 < MM && food.Feeling * Ratio_relF < 2 * MM) ;
+                    else
+                    {
+                        food.Price -= (food.Feeling - MM-0.1*smood) / 15 * 0.7;
+                        food.Feeling = MM+0.1*smood;
+                    }
+                }
+                else
+                {
+                    food.Price += food.Feeling * (Ratio_relF - 1) / 15 * 0.7;
+                    food.Feeling *= Ratio_relF;
+                }
+            }
+            else if (food.Type == Food.FoodType.Gift)
+            {
+                if (food.Feeling * Ratio_relF > MM)
+                {
+                    if (food.Feeling / 2 < MM && food.Feeling * Ratio_relF < 2 * MM)
+                        return food;
+                    else
+                    {
+                        food.Price -= (food.Feeling - MM - 0.1 * smood) / 15 * 0.7;
+                        food.Feeling = MM + 0.1 * smood;
+                    }
+                }
+                else
+                {
+                    food.Price += food.Feeling * (Ratio_relF - 1) / 15 * 0.7;
+                    food.Feeling *= Ratio_relF;
+                }
+            }
+            return food;
+        }
         private void Autobuy_OFFViolence(double sm, double smood)
         {
             var havemoney = (Set.MaxPrice < MW.GameSavesData.GameSave.Money ? Set.MaxPrice : MW.GameSavesData.GameSave.Money);
@@ -187,65 +285,69 @@ namespace VPET.Evian.TEST
             {
                 if ((MW.GameSavesData.GameSave.StrengthFood + MW.GameSavesData.GameSave.StoreStrengthFood) < sm * Set.MinSatiety * 0.01 * 0.8)
                 {//太饿了,找正餐
-                    food = food.FindAll(x => x.Type == Food.FoodType.Meal && x.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? (sm * Set.MinGoodSatiety * 0.01) : sm));
+                    food = food.FindAll(x => x.Type == Food.FoodType.Meal && x.StrengthFood > (Set.MinGoodSatiety < 100 ? Set.MinGoodSatiety : 100));
                 }
                 else
                 {//找零食
-                    food = food.FindAll(x => x.Type == Food.FoodType.Snack && x.StrengthFood > (sm * Set.MinGoodSatiety * 0.01 < sm ? (sm * Set.MinGoodSatiety * 0.01) : sm));
+                    food = food.FindAll(x => x.Type == Food.FoodType.Snack && x.StrengthFood > (Set.MinGoodSatiety < 100 ? Set.MinGoodSatiety : 100));
                 }
                 if (food.Count == 0)
                     return;
                 var item = food[Function.Rnd.Next(food.Count)];
+                item = Double(item);
                 MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                 TakeItem(item);
             }
             else if ((MW.GameSavesData.GameSave.StrengthDrink + MW.GameSavesData.GameSave.StoreStrengthDrink) < sm * Set.MinThirst * 0.01)
             {
-                food = food.FindAll(x => x.Type == Food.FoodType.Drink && x.StrengthDrink > (sm * Set.MinGoodThirst * 0.01 < sm ? sm * Set.MinGoodThirst * 0.01 : sm));
+                food = food.FindAll(x => x.Type == Food.FoodType.Drink && x.StrengthDrink > (Set.MinGoodThirst < 100 ? Set.MinGoodThirst : 100));
                 if (food.Count == 0)
                     return;
                 var item = food[Function.Rnd.Next(food.Count)];
+                item = Double(item);
                 MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                 TakeItem(item);
             }
             else if (MW.GameSavesData.GameSave.Health < 100 * Set.MinHealth * 0.01)
             {
-                food = food.FindAll(x => x.Type == Food.FoodType.Drug && x.Health > (sm * Set.MinGoodHealth * 0.01 < sm ? sm * Set.MinGoodHealth * 0.01 : sm));
+                food = food.FindAll(x => x.Type == Food.FoodType.Drug && x.Health > (Set.MinGoodHealth < 100 ? Set.MinGoodHealth : 100));
                 if (food.Count == 0)
                     return;
                 var item = food[Function.Rnd.Next(food.Count)];
                 MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                 TakeItem(item);
             }
-                else if ((MW.GameSavesData.GameSave.Feeling + MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01)
+            else if ((MW.GameSavesData.GameSave.Feeling + MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01)
+            {
+                if ((MW.GameSavesData.GameSave.Feeling + MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01 * 0.8)
                 {
-                            if ((MW.GameSavesData.GameSave.Feeling + MW.GameSavesData.GameSave.StoreFeeling) < smood * Set.MinMood * 0.01 * 0.8)
-                            {
-                            mood_Gift:
-                                food = food.FindAll(x => x.Type == Food.FoodType.Gift && x.Feeling > (smood * Set.MinGoodMood * 0.01 < smood ? smood * Set.MinGoodMood * 0.01 : smood));
-                                if (food.Count == 0)
-                                {
-                                    smood *= 0.5;
-                                    goto mood_Gift;
-                                }
-                                var item = food[Function.Rnd.Next(food.Count)];
-                                MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
-                                TakeItem(item);
-                            }
-                            else
-                            {
-                            mood_Snake:
-                                food = food.FindAll(x => x.Type == Food.FoodType.Snack && x.Feeling > (smood * Set.MinGoodMood * 0.01 < smood ? smood * Set.MinGoodMood * 0.01 : smood));
-                                if (food.Count == 0)
-                                {
-                                    smood *= 0.8;
-                                    goto mood_Snake;
-                                }
-                                var item = food[Function.Rnd.Next(food.Count)];
-                                MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
-                                TakeItem(item);
-                            }
+                mood_Gift:
+                    food = food.FindAll(x => x.Type == Food.FoodType.Gift && x.Feeling > (Set.MinGoodMood < 100 ? Set.MinGoodMood : 100));
+                    if (food.Count == 0)
+                    {
+                        smood *= 0.5;
+                        goto mood_Gift;
+                    }
+                    var item = food[Function.Rnd.Next(food.Count)];
+                    item = Double(item);
+                    MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                    TakeItem(item);
                 }
+                else
+                {
+                mood_Snake:
+                    food = food.FindAll(x => x.Type == Food.FoodType.Gift && x.Feeling > (Set.MinGoodMood < 100 ? Set.MinGoodMood : 100));
+                    if (food.Count == 0)
+                    {
+                        smood *= 0.8;
+                        goto mood_Snake;
+                    }
+                    var item = food[Function.Rnd.Next(food.Count)];
+                    item = Double(item);
+                    MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
+                    TakeItem(item);
+                }
+            }
             
         }
     }
