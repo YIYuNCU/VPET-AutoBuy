@@ -178,7 +178,7 @@ namespace VPET.Evian.TEST
                 }
             }
         }
-        private Food Double(Food food)
+        private Food Double(Food food,bool gift = false)
         {
             var sm = MW.GameSavesData.GameSave.StrengthMax;
             var smood = MW.GameSavesData.GameSave.FeelingMax;
@@ -226,33 +226,39 @@ namespace VPET.Evian.TEST
             }
             else if (food.Type == Food.FoodType.Snack)
             {
-                if (food.StrengthFood * Ratio_relS > FM)
+                if(!gift)
                 {
-                    if (food.StrengthFood / 2 < FM && food.StrengthFood * Ratio_relS < 2 * FM) ;
+                    if (food.StrengthFood * Ratio_relS > FM)
+                    {
+                        if (food.StrengthFood / 2 < FM && food.StrengthFood * Ratio_relS < 2 * FM) ;
+                        else
+                        {
+                            food.Price -= (food.StrengthFood - FM - 0.1 * sm) / 6 * 0.7;
+                            food.StrengthFood = FM + 0.1 * sm;
+                        }
+                    }
                     else
                     {
-                        food.Price -= (food.StrengthFood - FM-0.1*sm) / 6 * 0.7;
-                        food.StrengthFood = FM+0.1*sm;
+                        food.Price += food.StrengthFood * (Ratio_relS - 1) / 6 * 0.7;
+                        food.StrengthFood *= Ratio_relS;
                     }
                 }
-                else
+                if(gift)
                 {
-                    food.Price += food.StrengthFood * (Ratio_relS - 1) / 6 * 0.7;
-                    food.StrengthFood *= Ratio_relS;
-                }
-                if (food.Feeling * Ratio_relF > MM)
-                {
-                    if (food.Feeling / 2 < MM && food.Feeling * Ratio_relF < 2 * MM) ;
+                    if (food.Feeling * Ratio_relF > MM)
+                    {
+                        if (food.Feeling / 2 < MM && food.Feeling * Ratio_relF < 2 * MM) ;
+                        else
+                        {
+                            food.Price -= (food.Feeling - MM - 0.1 * smood) / 15 * 0.7;
+                            food.Feeling = MM + 0.1 * smood;
+                        }
+                    }
                     else
                     {
-                        food.Price -= (food.Feeling - MM-0.1*smood) / 15 * 0.7;
-                        food.Feeling = MM+0.1*smood;
+                        food.Price += food.Feeling * (Ratio_relF - 1) / 15 * 0.7;
+                        food.Feeling *= Ratio_relF;
                     }
-                }
-                else
-                {
-                    food.Price += food.Feeling * (Ratio_relF - 1) / 15 * 0.7;
-                    food.Feeling *= Ratio_relF;
                 }
             }
             else if (food.Type == Food.FoodType.Gift)
@@ -343,7 +349,7 @@ namespace VPET.Evian.TEST
                         goto mood_Snake;
                     }
                     var item = food[Function.Rnd.Next(food.Count)];
-                    item = Double(item);
+                    item = Double(item,true);
                     MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                     TakeItem(item);
                 }
