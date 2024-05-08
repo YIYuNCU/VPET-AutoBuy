@@ -8,7 +8,7 @@ using VPet_Simulator.Core;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Panuon.WPF.UI;
 
-namespace VPET.Evian.TEST
+namespace VPET.Evian.AutoBuy
 {
     /// <summary>
     /// winSetting.xaml 的交互逻辑

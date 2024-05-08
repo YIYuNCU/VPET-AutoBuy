@@ -1,7 +1,7 @@
 ﻿using LinePutScript;
 using LinePutScript.Converter;
 
-namespace VPET.Evian.TEST
+namespace VPET.Evian.AutoBuy
 {
     public class Setting : Line
     {
