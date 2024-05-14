@@ -5,22 +5,23 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:ll="clr-namespace:LinePutScript.Localization.WPF;assembly=LinePutScript.Localization.WPF"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:VPET.Evian.AutoBuy"
-        mc:Ignorable="d" xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI" Title="{ll:Str SettingPP 设置}" Width="420"
-        FontSize="16" Height="322" ResizeMode="NoResize" WindowState="Normal" SizeToContent="Height"
-        Background="{DynamicResource PrimaryLighter}" Closed="Window_Closed">
+        mc:Ignorable="d" xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI" Title="{ll:Str SettingPP 设置}"
+        FontSize="16" ResizeMode="NoResize" WindowState="Normal" SizeToContent="WidthAndHeight"
+        Background="{DynamicResource PrimaryLighter}" Closed="Window_Closed" Height="371">
     <Window.Resources>
         <ResourceDictionary Source="/VPet-Simulator.Windows.Interface;component/ResourceStyle.xaml" />
     </Window.Resources>
 
     <Grid Margin="8,8,8,8" Background="{DynamicResource PrimaryLighter}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="80"/>
-            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
@@ -32,21 +33,21 @@
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{ll:Str 启用}" VerticalAlignment="Center"  Margin="8,0,0,0"/>
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="{ll:Str 最高价格}" VerticalAlignment="Center"  RenderTransformOrigin="0.712,0.738" Grid.Column="2"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,35,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2" RenderTransformOrigin="0.363,0.437"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 最低状态}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="{ll:Str 最低状态}" VerticalAlignment="Center" Margin="4,0,0,0"/>
         <TextBlock HorizontalAlignment="Center" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 口渴度%}" VerticalAlignment="Center" Grid.Column="1"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="{ll:Str 心情%}" VerticalAlignment="Center"/>
         <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="2" TextWrapping="Wrap" Text="{ll:Str 饱腹度%}" VerticalAlignment="Center"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 口渴度%}" VerticalAlignment="Center"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="5" TextWrapping="Wrap" Text="{ll:Str 心情%}" VerticalAlignment="Center"/>
         <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 饱腹度%}" VerticalAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="4" TextWrapping="Wrap" Text="{ll:Str 最低属性}" VerticalAlignment="Center" Margin="4,0,0,0"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Row="1" TextWrapping="Wrap" Text="{ll:Str 启用所需最低存款}" VerticalAlignment="Center"  Grid.ColumnSpan="3" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="4" Grid.Column="0" TextWrapping="Wrap" Text="{ll:Str 最低属性}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Grid.Row="1" TextWrapping="Wrap" Text="{ll:Str 启用所需最低存款}" VerticalAlignment="Center"  Grid.ColumnSpan="2" Margin="4,0,0,0"/>
 
         <pu:Switch x:Name="SwitchOn" BorderBrush="{DynamicResource DARKPrimaryDark}"
          CheckedBackground="{DynamicResource DARKPrimary}" CheckedBorderBrush="{DynamicResource DARKPrimary}"
          Background="Transparent" BoxWidth="35" BoxHeight="18" ToggleSize="14" ToggleShadowColor="{x:Null}"
          ToggleBrush="{DynamicResource DARKPrimaryDark}" 
-         CheckedToggleBrush="{DynamicResource DARKPrimaryText}" Grid.Column="1" Margin="21,0,23,0" />
+         CheckedToggleBrush="{DynamicResource DARKPrimaryText}" Grid.Column="1" Margin="21,0,23,0" IsChecked="{Binding Star}" />
         <TextBox Grid.Column="3" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" x:Name="MaxPrice" />
         <TextBox Grid.Column="2" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="1" x:Name="LowDeposit"/>
         <TextBox Grid.Column="2" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="2" x:Name="MinThirst"/>
@@ -57,7 +58,7 @@
         <TextBox Grid.Column="2" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="5" x:Name="MinGoodMood"/>
 
         <Button pu:ButtonHelper.CornerRadius="4" Content="{ll:Str 保存设置}" Background="{DynamicResource SecondaryLight}"
-        BorderBrush="{DynamicResource SecondaryDark}" BorderThickness="2" Grid.Row="6" Margin="47,8,43,2"
+        BorderBrush="{DynamicResource SecondaryDark}" BorderThickness="2" Grid.Row="7" Margin="45,12,45,-2" Grid.Column="0"
         Grid.ColumnSpan="5" Click="Save_Click" />
         <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="{ll:Str 健康%}" VerticalAlignment="Center"/>
         <TextBox Grid.Column="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" Grid.Row="3" x:Name="MinHealth"/>
@@ -69,5 +70,11 @@
             Background="Transparent" BoxWidth="35" BoxHeight="18" ToggleSize="14" ToggleShadowColor="{x:Null}"
             ToggleBrush="{DynamicResource DARKPrimaryDark}" 
             CheckedToggleBrush="{DynamicResource DARKPrimaryText}" Grid.Column="4" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{ll:Str 仅购买收藏商品}" VerticalAlignment="Center" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"/>
+        <pu:Switch x:Name="StarOn" BorderBrush="{DynamicResource DARKPrimaryDark}"
+            CheckedBackground="{DynamicResource DARKPrimary}" CheckedBorderBrush="{DynamicResource DARKPrimary}"
+            Background="Transparent" BoxWidth="35" BoxHeight="18" ToggleSize="14" ToggleShadowColor="{x:Null}"
+            ToggleBrush="{DynamicResource DARKPrimaryDark}" 
+            CheckedToggleBrush="{DynamicResource DARKPrimaryText}" Grid.Column="2" Grid.Row="6" />
     </Grid>
 </Window>

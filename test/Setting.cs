@@ -161,5 +161,10 @@ namespace VPET.Evian.AutoBuy
         /// </summary>
         [Line]
         public bool Mode { get; set; } = false;
+        /// <summary>
+        /// 仅购买收藏商品
+        /// </summary>
+        [Line]
+        public bool StarOn { get; set; } = false;
     }
 }

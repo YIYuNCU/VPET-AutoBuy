@@ -15,10 +15,10 @@ namespace VPET.Evian.AutoBuy
     /// </summary>
     public partial class winSetting : Window
     {
-        SettingPP vts;
+        AutoBuy vts;
 
 
-        public winSetting(SettingPP vts)
+        public winSetting(AutoBuy vts)
         {
             InitializeComponent();
             this.vts = vts;
@@ -29,6 +29,7 @@ namespace VPET.Evian.AutoBuy
             }
             SwitchOn.IsChecked = vts.Set.Enable;
             Mode.IsChecked = vts.Set.Mode;
+            StarOn.IsChecked = vts.Set.StarOn;
             MaxPrice.Text = vts.Set.MaxPrice.ToString();
             LowDeposit.Text = vts.Set.MinDeposit.ToString();
             MinThirst.Text = vts.Set.MinThirst.ToString();
@@ -45,6 +46,7 @@ namespace VPET.Evian.AutoBuy
         private void Window_Closed(object sender, EventArgs e)
         {
             vts.winSetting = null;
+
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -62,6 +64,10 @@ namespace VPET.Evian.AutoBuy
             {
                 vts.Set.Mode = Mode.IsChecked.Value;
             }
+            if (vts.Set.StarOn != StarOn.IsChecked.Value)
+            {
+                vts.Set.StarOn = StarOn.IsChecked.Value;
+            }
             vts.Set.MaxPrice = Convert.ToInt32(MaxPrice.Text);
             vts.Set.MinDeposit = Convert.ToInt32(LowDeposit.Text);
             vts.Set.MinThirst = Convert.ToInt32(MinThirst.Text);
@@ -72,7 +78,7 @@ namespace VPET.Evian.AutoBuy
             vts.Set.MinGoodSatiety = Convert.ToInt32(MinGoodSatiety.Text)+2;
             vts.Set.MinGoodMood = Convert.ToInt32(MinGoodMood.Text)+2;
             vts.Set.MinGoodHealth = Convert.ToInt32(MinGoodHealth.Text)+2;
-            vts.MW.Set["SettingPP"] = LPSConvert.SerializeObject(vts.Set, "SettingPP");
+            vts.MW.Set["AutoBuy"] = LPSConvert.SerializeObject(vts.Set, "AutoBuy");
             Close();
         }
 

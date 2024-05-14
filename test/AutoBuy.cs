@@ -1,7 +1,10 @@
 ﻿using LinePutScript;
+using LinePutScript.Converter;
 using LinePutScript.Localization.WPF;
 using Panuon.WPF.UI;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -11,38 +14,60 @@ using VPet_Simulator.Windows.Interface;
 
 namespace VPET.Evian.AutoBuy
 {
-    public class SettingPP : MainPlugin
+    public class AutoBuy : MainPlugin
     {
         public Setting Set;
 
         public override string PluginName => "AutoBuy";
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-        public SettingPP(IMainWindow mainwin) : base(mainwin)
+        public AutoBuy(IMainWindow mainwin) : base(mainwin)
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         {
         }
         public override void LoadPlugin()
         {
             ///从Setting.lps中读取存储的设置
-            Set = new Setting(MW.Set["SettingPP"]);
-            Set.MaxPrice = MW.Set["SettingPP"].GetInt("MaxPrice");
-            Set.MinThirst = MW.Set["SettingPP"].GetInt("MinThirst");
-            Set.MinSatiety = MW.Set["SettingPP"].GetInt("MinSatiety");
-            Set.MinMood = MW.Set["SettingPP"].GetInt("MinMood");
-            Set.MinHealth = MW.Set["SettingPP"].GetInt("MinHealth");
-            Set.MinDeposit = MW.Set["SettingPP"].GetInt("MinDeposit");
-            Set.MinGoodThirst = MW.Set["SettingPP"].GetInt("MinGoodThirst");
-            Set.MinGoodSatiety = MW.Set["SettingPP"].GetInt("MinGoodSatiety");
-            Set.MinGoodMood = MW.Set["SettingPP"].GetInt("MinGoodMood");
-            Set.MinGoodHealth = MW.Set["SettingPP"].GetInt("MinGoodHealth");
-            Set.Enable = MW.Set["SettingPP"].GetBool("Enable");
-
+            if (MW.Set["SettingPP"].GetBool("Remove") == false)
+            {
+                Set = new Setting(MW.Set["AutoBuy"]);
+                Set.MaxPrice = MW.Set["SettingPP"].GetInt("MaxPrice");
+                Set.MinThirst = MW.Set["SettingPP"].GetInt("MinThirst");
+                Set.MinSatiety = MW.Set["SettingPP"].GetInt("MinSatiety");
+                Set.MinMood = MW.Set["SettingPP"].GetInt("MinMood");
+                Set.MinHealth = MW.Set["SettingPP"].GetInt("MinHealth");
+                Set.MinDeposit = MW.Set["SettingPP"].GetInt("MinDeposit");
+                Set.MinGoodThirst = MW.Set["SettingPP"].GetInt("MinGoodThirst");
+                Set.MinGoodSatiety = MW.Set["SettingPP"].GetInt("MinGoodSatiety");
+                Set.MinGoodMood = MW.Set["SettingPP"].GetInt("MinGoodMood");
+                Set.MinGoodHealth = MW.Set["SettingPP"].GetInt("MinGoodHealth");
+                Set.Enable = MW.Set["SettingPP"].GetBool("Enable");
+                Set.StarOn = MW.Set["SettingPP"].GetBool("StarOn");
+                MW.Set["SettingPP"][(gbol)"Remove"] = true;
+                MW.Set["SettingPP"].AddSub(MW.Set["SettingPP"]["Remove"]);
+                MW.Set["AutoBuy"] = LPSConvert.SerializeObject(Set,"AutoBuy");
+            }
+            else
+            {
+                Set = new Setting(MW.Set["AutoBuy"]);
+                Set.MaxPrice = MW.Set["AutoBuy"].GetInt("MaxPrice");
+                Set.MinThirst = MW.Set["AutoBuy"].GetInt("MinThirst");
+                Set.MinSatiety = MW.Set["AutoBuy"].GetInt("MinSatiety");
+                Set.MinMood = MW.Set["AutoBuy"].GetInt("MinMood");
+                Set.MinHealth = MW.Set["AutoBuy"].GetInt("MinHealth");
+                Set.MinDeposit = MW.Set["AutoBuy"].GetInt("MinDeposit");
+                Set.MinGoodThirst = MW.Set["AutoBuy"].GetInt("MinGoodThirst");
+                Set.MinGoodSatiety = MW.Set["AutoBuy"].GetInt("MinGoodSatiety");
+                Set.MinGoodMood = MW.Set["AutoBuy"].GetInt("MinGoodMood");
+                Set.MinGoodHealth = MW.Set["AutoBuy"].GetInt("MinGoodHealth");
+                Set.Enable = MW.Set["AutoBuy"].GetBool("Enable");
+                Set.StarOn = MW.Set["AutoBuy"].GetBool("StarOn");
+            }
 
             MenuItem modset = MW.Main.ToolBar.MenuMODConfig;
             modset.Visibility = Visibility.Visible;
             var menuItem = new MenuItem()
             {
-                Header = "SettingPP".Translate(),
+                Header = "AutoBuy".Translate(),
                 HorizontalContentAlignment = HorizontalAlignment.Center,
             };
             menuItem.Click += (s, e) => { Setting(); };
@@ -176,8 +201,12 @@ namespace VPET.Evian.AutoBuy
                 }
             }
         }
-        private Food Double(Food food,bool gift = false)
+        private Food Double(Food food,int type = -1)
         {
+            if(type == -1)
+            {
+                return food;
+            }
             var sm = MW.GameSavesData.GameSave.StrengthMax;
             var smood = MW.GameSavesData.GameSave.FeelingMax;
 
@@ -186,7 +215,7 @@ namespace VPET.Evian.AutoBuy
             var MM = smood * Set.MinMood * 0.01 - MW.GameSavesData.GameSave.Feeling;
             var Ratio_relS = MW.GameSavesData.GameSave.StrengthMax / 100;
             var Ratio_relF = MW.GameSavesData.GameSave.FeelingMax / 100;
-            if (food.Type == Food.FoodType.Meal)
+            if (type == 0) ///food
             {
                 if (food.StrengthFood * Ratio_relS > FM)
                 {
@@ -204,7 +233,7 @@ namespace VPET.Evian.AutoBuy
                     food.StrengthFood *= Ratio_relS;
                 }
             }
-            else if (food.Type == Food.FoodType.Drink)
+            else if (type == 1)///drink
             {
                 if (food.StrengthDrink * Ratio_relS > DM)
                 {
@@ -222,44 +251,7 @@ namespace VPET.Evian.AutoBuy
                     food.StrengthDrink *= Ratio_relS;
                 }
             }
-            else if (food.Type == Food.FoodType.Snack)
-            {
-                if(!gift)
-                {
-                    if (food.StrengthFood * Ratio_relS > FM)
-                    {
-                        if (food.StrengthFood / 2 < FM && food.StrengthFood * Ratio_relS < 2 * FM) ;
-                        else
-                        {
-                            food.Price -= (food.StrengthFood - FM - 0.1 * sm) / 6 * 0.7;
-                            food.StrengthFood = FM + 0.1 * sm;
-                        }
-                    }
-                    else
-                    {
-                        food.Price += food.StrengthFood * (Ratio_relS - 1) / 6 * 0.7;
-                        food.StrengthFood *= Ratio_relS;
-                    }
-                }
-                if(gift)
-                {
-                    if (food.Feeling * Ratio_relF > MM)
-                    {
-                        if (food.Feeling / 2 < MM && food.Feeling * Ratio_relF < 2 * MM) ;
-                        else
-                        {
-                            food.Price -= (food.Feeling - MM - 0.1 * smood) / 15 * 0.7;
-                            food.Feeling = MM + 0.1 * smood;
-                        }
-                    }
-                    else
-                    {
-                        food.Price += food.Feeling * (Ratio_relF - 1) / 15 * 0.7;
-                        food.Feeling *= Ratio_relF;
-                    }
-                }
-            }
-            else if (food.Type == Food.FoodType.Gift)
+            else if (type == 2)///feeling
             {
                 if (food.Feeling * Ratio_relF > MM)
                 {
@@ -282,9 +274,13 @@ namespace VPET.Evian.AutoBuy
         private void Autobuy_OFFViolence(double sm, double smood)
         {
             var havemoney = (Set.MaxPrice < MW.GameSavesData.GameSave.Money ? Set.MaxPrice : MW.GameSavesData.GameSave.Money);
-            List<Food> food = MW.Foods.FindAll(x => x.Price >= 2 && x.Health >= 0 && x.Exp >= 0 && x.Likability >= 0 && x.Price < havemoney //桌宠不吃负面的食物
+            List<Food> food = MW.Foods.FindAll(x => x.Price >= 2 && x.Health >= -10 && x.Exp >= 0 && x.Likability >= 0 && x.Price < havemoney //桌宠不吃负面的食物
              && !x.IsOverLoad() // 不吃超模食物
              );
+            if (Set.StarOn)
+            {
+                food = food.FindAll(x => x.Star == true);
+            }
             if ((MW.GameSavesData.GameSave.StrengthFood + MW.GameSavesData.GameSave.StoreStrengthFood) < sm * Set.MinSatiety * 0.01)
             {
                 if ((MW.GameSavesData.GameSave.StrengthFood + MW.GameSavesData.GameSave.StoreStrengthFood) < sm * Set.MinSatiety * 0.01 * 0.8)
@@ -298,7 +294,7 @@ namespace VPET.Evian.AutoBuy
                 if (food.Count == 0)
                     return;
                 var item = food[Function.Rnd.Next(food.Count)];
-                item = Double(item);
+                item = Double(item,0);
                 MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                 TakeItem(item);
             }
@@ -308,7 +304,7 @@ namespace VPET.Evian.AutoBuy
                 if (food.Count == 0)
                     return;
                 var item = food[Function.Rnd.Next(food.Count)];
-                item = Double(item);
+                item = Double(item,1);
                 MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                 TakeItem(item);
             }
@@ -333,7 +329,7 @@ namespace VPET.Evian.AutoBuy
                         goto mood_Gift;
                     }
                     var item = food[Function.Rnd.Next(food.Count)];
-                    item = Double(item);
+                    item = Double(item,2);
                     MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                     TakeItem(item);
                 }
@@ -347,7 +343,7 @@ namespace VPET.Evian.AutoBuy
                         goto mood_Snake;
                     }
                     var item = food[Function.Rnd.Next(food.Count)];
-                    item = Double(item,true);
+                    item = Double(item,2);
                     MW.GameSavesData.GameSave.Money -= item.Price * 0.2;
                     TakeItem(item);
                 }
